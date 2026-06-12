@@ -420,6 +420,28 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
+  drawerSignOutWrap: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#1E2B47',
+  },
+  drawerSignOutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#1F0A0A',
+    borderRadius: 14,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: '#FF4757',
+  },
+  drawerSignOutText: {
+    color: '#FF4757',
+    fontSize: 15,
+    fontWeight: '800',
+  },
 });
 
 

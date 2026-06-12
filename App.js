@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 //Component import
 import { 
-  Text, Image,  View, ImageBackground, 
+  Text, Image, View, ImageBackground, 
   ScrollView, TouchableOpacity, SafeAreaView, 
-  StatusBar, Animated, Easing } from 'react-native';
+  StatusBar, Alert } from 'react-native';
 
 // Alle benötigten Icons in einem einzigen Import zusammengefasst
 import { Trophy, Bell, Search, 
   User, ChevronRight, Home, 
   LayoutGrid, CalendarDays, 
   MessageSquare, Users, 
-  PlusCircle, Menu, X} from 'lucide-react-native';
+  PlusCircle, Menu, X, LogOut } from 'lucide-react-native';
 
 //Screen imports
 import styles from './HomeScreen.styles';
@@ -25,7 +25,11 @@ import ProfilScreen from './screens/ProfilScreen.js';
 import PlayerOnboardingFlow from './screens/onboarding/PlayerOnboardingFlow';
 import LandingScreen from './screens/auth/LandingScreen';
 import LoginScreen from './screens/auth/LoginScreen';
+import { supabase } from './lib/supabase';
 
+
+const REGIONS = ['ALLE REGIONEN', 'BAWÜ', 'BAYERN', 'NRW', 'HESSEN', 'NORD', 'OST', 'WEST'];
+const LIGEN   = ['ALLE NEWS', 'GFL 1', 'GFL 2', 'ELF', 'DBFX (FRAUEN)', '2. DBL', 'REGIONAL', 'JUGEND'];
 
 export default function App() {
   
@@ -33,6 +37,21 @@ export default function App() {
   const [activeRegion, setActiveRegion] = useState(0); //0 bedeutet 'ALLE RAGIONEN' sind aktiv
   const [activeLeague, setActiveLeague] = useState(0); // 0 bedeutet 'ALLE LIGEN' sind aktiv
   const [selectedGame, setSelectedGame] = useState(null) // kein Spiel ausgewählt
+
+
+  const handleSignOut = () => {
+    Alert.alert('Abmelden', 'Möchtest du dich wirklich abmelden?', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Abmelden', style: 'destructive',
+        onPress: async () => {
+          setIsMenuOpen(false);
+          await supabase.auth.signOut();
+          setAuthState('landing');
+        },
+      },
+    ]);
+  };
 
   // 1. Hilfsfunktion zum Rendern der verschiedenen Tab-Inhalte
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Steuert, ob das Menü offen ist
@@ -73,9 +92,9 @@ export default function App() {
               📍 REGION AUSWÄHLEN
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[styles.filterScroll, { marginBottom: 12 }]}>
-              {['ALLE REGIONEN', 'BAWÜ', 'BAYERN', 'NRW', 'HESSEN', 'NORD', 'OST', 'WEST'].map((region, index) => (
-                <TouchableOpacity 
-                  key={index} 
+              {REGIONS.map((region, index) => (
+                <TouchableOpacity
+                  key={index}
                   style={[styles.filterTab, activeRegion === index && styles.activeFilterTab]}
                   onPress={() => setActiveRegion(index)}
                 >
@@ -91,18 +110,9 @@ export default function App() {
               🏈 LIGA AUSWÄHLEN
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-              {[
-                'ALLE NEWS', 
-                'GFL 1', 
-                'GFL 2', 
-                'ELF', 
-                'DBFX (FRAUEN)', 
-                '2. DBL', 
-                'REGIONAL', 
-                'JUGEND'
-              ].map((item, index) => (
-                <TouchableOpacity 
-                  key={index} 
+              {LIGEN.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
                   style={[styles.filterTab, activeLeague === index && styles.activeFilterTab]}
                   onPress={() => setActiveLeague(index)}
                 >
@@ -446,6 +456,15 @@ export default function App() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+
+            {/* ABMELDEN */}
+            <View style={styles.drawerSignOutWrap}>
+              <TouchableOpacity style={styles.drawerSignOutBtn} onPress={handleSignOut} activeOpacity={0.85}>
+                <LogOut size={18} color="#FF4757" />
+                <Text style={styles.drawerSignOutText}>Abmelden</Text>
+              </TouchableOpacity>
+            </View>
+
           </View>
         </View>
       )}
